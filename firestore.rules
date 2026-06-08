@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Agents: lectura publica, escritura solo el propio agente
+    match /agents/{agentId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == agentId;
+      allow update: if request.auth != null && request.auth.uid == agentId;
+      allow delete: if false;
+    }
+
+    // Properties: lectura publica para activos, CRUD del dueno
+    match /properties/{propertyId} {
+      allow read: if resource.data.status == 'active'
+                  || (request.auth != null && resource.data.agentId == request.auth.uid);
+      allow create: if request.auth != null && request.resource.data.agentId == request.auth.uid;
+      allow update: if request.auth != null && resource.data.agentId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.agentId == request.auth.uid;
+    }
+
+    // Connections: visible para ambas partes
+    match /connections/{connectionId} {
+      allow read: if request.auth != null
+                  && (resource.data.requesterId == request.auth.uid
+                      || resource.data.receiverId == request.auth.uid);
+      allow create: if request.auth != null
+                    && request.resource.data.requesterId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.receiverId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // Leads: lectura solo del agente receptor, creacion publica
+    match /leads/{leadId} {
+      allow read: if request.auth != null && resource.data.agentId == request.auth.uid;
+      allow create: if true;
+      allow update: if request.auth != null && resource.data.agentId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // Cities: solo lectura
+    match /cities/{cityId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
