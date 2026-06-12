@@ -1,38 +1,12 @@
-import { adminDb, getAuthUser } from '@/lib/firebase/admin'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { LeadActions } from '@/components/leads/lead-actions'
 import { formatRelativeDate } from '@/lib/formatters'
 import { Mail, Phone, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
+import { MOCK_LEADS } from '@/lib/mock-data'
 
-export default async function LeadsPage() {
-  const user = await getAuthUser()
-  if (!user) return null
-
-  const snapshot = await adminDb
-    .collection('leads')
-    .where('agentId', '==', user.uid)
-    .orderBy('createdAt', 'desc')
-    .limit(50)
-    .get()
-
-  const leads = snapshot.docs.map((doc) => {
-    const data = doc.data()
-    return {
-      id: doc.id,
-      propertyId: data.propertyId as string | null,
-      propertyTitle: data.propertyTitle as string | null,
-      agentId: data.agentId as string,
-      name: data.name as string,
-      email: data.email as string | null,
-      phone: data.phone as string,
-      message: data.message as string | null,
-      source: data.source as string,
-      isRead: data.isRead as boolean,
-      createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
-    }
-  })
-
+export default function LeadsPage() {
+  const leads = MOCK_LEADS.filter((l) => l.agentId === 'agent-1')
   const unread = leads.filter((l) => !l.isRead).length
 
   return (

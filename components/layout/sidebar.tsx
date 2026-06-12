@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { signOut } from '@/lib/firebase/auth'
@@ -40,8 +41,8 @@ export function Sidebar() {
     <aside className="flex h-full w-64 flex-col border-r bg-background">
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6">
-        <Link href="/" className="text-xl font-bold text-primary">
-          RAIFI
+        <Link href="/">
+          <Image src="/images/logo-icon.png" alt="RAIFI" width={32} height={32} className="h-8 w-auto" />
         </Link>
       </div>
 

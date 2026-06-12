@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function Footer() {
   return (
@@ -6,7 +7,7 @@ export function Footer() {
       <div className="container py-8">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <h3 className="text-lg font-bold text-primary">RAIFI</h3>
+            <Image src="/images/logo-full.png" alt="RAIFI" width={120} height={40} className="h-8 w-auto" />
             <p className="mt-2 text-sm text-muted-foreground">
               Plataforma inmobiliaria colaborativa para agentes independientes en Colombia.
             </p>

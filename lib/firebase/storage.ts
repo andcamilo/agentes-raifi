@@ -1,40 +1,29 @@
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from 'firebase/storage'
-import { storage } from './config'
+// Stubbed storage module - replace with real Firebase Storage when ready
 
 export async function uploadFile(
   path: string,
-  file: File,
+  _file: File,
 ): Promise<{ url: string; storagePath: string }> {
-  const storageRef = ref(storage, path)
-  await uploadBytes(storageRef, file)
-  const url = await getDownloadURL(storageRef)
-  return { url, storagePath: path }
+  return { url: 'https://placehold.co/800x600?text=Uploaded', storagePath: path }
 }
 
 export async function uploadPropertyImage(
   agentId: string,
-  file: File,
+  _file: File,
   imageId: string,
 ): Promise<{ url: string; storagePath: string }> {
   const path = `property-images/${agentId}/${imageId}`
-  return uploadFile(path, file)
+  return { url: 'https://placehold.co/800x600?text=Property', storagePath: path }
 }
 
 export async function uploadAvatar(
   userId: string,
-  file: File,
+  _file: File,
 ): Promise<{ url: string; storagePath: string }> {
-  const ext = file.name.split('.').pop() || 'jpg'
-  const path = `avatars/${userId}/avatar.${ext}`
-  return uploadFile(path, file)
+  const path = `avatars/${userId}/avatar.jpg`
+  return { url: 'https://placehold.co/200x200?text=Avatar', storagePath: path }
 }
 
-export async function deleteFile(storagePath: string): Promise<void> {
-  const storageRef = ref(storage, storagePath)
-  await deleteObject(storageRef)
+export async function deleteFile(_storagePath: string): Promise<void> {
+  // no-op in mock mode
 }

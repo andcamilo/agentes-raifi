@@ -1,4 +1,5 @@
-import { Timestamp } from 'firebase/firestore'
+// Timestamp type stub for when Firebase is not configured
+type Timestamp = { toDate: () => Date; seconds: number; nanoseconds: number }
 
 // ── Enums ──────────────────────────────────────────────
 

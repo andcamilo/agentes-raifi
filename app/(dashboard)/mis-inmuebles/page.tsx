@@ -1,4 +1,3 @@
-import { adminDb, getAuthUser } from '@/lib/firebase/admin'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -6,27 +5,10 @@ import { formatCompactCOP } from '@/lib/formatters'
 import { PROPERTY_STATUSES, PROPERTY_TYPES } from '@/lib/constants'
 import { Plus, Edit, Eye } from 'lucide-react'
 import { PropertyStatusActions } from '@/components/properties/property-status-actions'
-import type { PropertySerialized } from '@/types'
+import { MOCK_PROPERTIES } from '@/lib/mock-data'
 
-export default async function MyPropertiesPage() {
-  const user = await getAuthUser()
-  if (!user) return null
-
-  const snapshot = await adminDb
-    .collection('properties')
-    .where('agentId', '==', user.uid)
-    .orderBy('createdAt', 'desc')
-    .get()
-
-  const properties: PropertySerialized[] = snapshot.docs.map((doc) => {
-    const data = doc.data()
-    return {
-      id: doc.id,
-      ...data,
-      createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
-      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || '',
-    } as PropertySerialized
-  })
+export default function MyPropertiesPage() {
+  const properties = MOCK_PROPERTIES.filter((p) => p.agentId === 'agent-1')
 
   return (
     <div className="space-y-6">

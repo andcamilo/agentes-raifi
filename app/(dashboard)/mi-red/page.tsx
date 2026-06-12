@@ -1,36 +1,15 @@
-import { adminDb, getAuthUser } from '@/lib/firebase/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ConnectionActions } from '@/components/colegaje/connection-actions'
 import { formatWhatsAppUrl, formatRelativeDate } from '@/lib/formatters'
 import { MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { MOCK_CONNECTIONS } from '@/lib/mock-data'
 
-export default async function MyNetworkPage() {
-  const user = await getAuthUser()
-  if (!user) return null
+const CURRENT_UID = 'agent-1'
 
-  const [sentSnap, receivedSnap] = await Promise.all([
-    adminDb.collection('connections').where('requesterId', '==', user.uid).orderBy('createdAt', 'desc').get(),
-    adminDb.collection('connections').where('receiverId', '==', user.uid).orderBy('createdAt', 'desc').get(),
-  ])
-
-  const serialize = (doc: FirebaseFirestore.QueryDocumentSnapshot) => {
-    const data = doc.data()
-    return {
-      id: doc.id,
-      requesterId: data.requesterId as string,
-      receiverId: data.receiverId as string,
-      requesterName: data.requesterName as string,
-      receiverName: data.receiverName as string,
-      status: data.status as string,
-      message: data.message as string | null,
-      createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
-      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || '',
-    }
-  }
-
-  const sent = sentSnap.docs.map(serialize)
-  const received = receivedSnap.docs.map(serialize)
+export default function MyNetworkPage() {
+  const sent = MOCK_CONNECTIONS.filter((c) => c.requesterId === CURRENT_UID)
+  const received = MOCK_CONNECTIONS.filter((c) => c.receiverId === CURRENT_UID)
 
   const accepted = [...sent, ...received].filter((c) => c.status === 'accepted')
   const pendingReceived = received.filter((c) => c.status === 'pending')
@@ -40,7 +19,6 @@ export default async function MyNetworkPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Mi Red</h1>
 
-      {/* Pending received */}
       {pendingReceived.length > 0 && (
         <Card>
           <CardHeader>
@@ -61,7 +39,6 @@ export default async function MyNetworkPage() {
         </Card>
       )}
 
-      {/* Active connections */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Conexiones Activas ({accepted.length})</CardTitle>
@@ -72,7 +49,7 @@ export default async function MyNetworkPage() {
           ) : (
             <div className="space-y-3">
               {accepted.map((conn) => {
-                const partnerName = conn.requesterId === user.uid ? conn.receiverName : conn.requesterName
+                const partnerName = conn.requesterId === CURRENT_UID ? conn.receiverName : conn.requesterName
                 return (
                   <div key={conn.id} className="flex items-center justify-between rounded-lg border p-3">
                     <div>
@@ -93,7 +70,6 @@ export default async function MyNetworkPage() {
         </CardContent>
       </Card>
 
-      {/* Pending sent */}
       {pendingSent.length > 0 && (
         <Card>
           <CardHeader>

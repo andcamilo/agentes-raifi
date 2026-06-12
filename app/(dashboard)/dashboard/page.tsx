@@ -1,31 +1,13 @@
-import { adminDb, getAuthUser } from '@/lib/firebase/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Building2, Handshake, MessageSquare, Plus } from 'lucide-react'
+import { MOCK_PROPERTIES, MOCK_LEADS, MOCK_CONNECTIONS } from '@/lib/mock-data'
 
-async function getDashboardStats(uid: string) {
-  const [propertiesSnap, connectionsSnap, leadsSnap] = await Promise.all([
-    adminDb.collection('properties').where('agentId', '==', uid).where('status', '==', 'active').count().get(),
-    adminDb.collection('connections')
-      .where('receiverId', '==', uid)
-      .where('status', '==', 'pending')
-      .count().get(),
-    adminDb.collection('leads').where('agentId', '==', uid).where('isRead', '==', false).count().get(),
-  ])
-
-  return {
-    activeProperties: propertiesSnap.data().count,
-    pendingConnections: connectionsSnap.data().count,
-    unreadLeads: leadsSnap.data().count,
-  }
-}
-
-export default async function DashboardPage() {
-  const user = await getAuthUser()
-  if (!user) return null
-
-  const stats = await getDashboardStats(user.uid)
+export default function DashboardPage() {
+  const activeProperties = MOCK_PROPERTIES.filter((p) => p.agentId === 'agent-1' && p.status === 'active').length
+  const pendingConnections = MOCK_CONNECTIONS.filter((c) => c.receiverId === 'agent-1' && c.status === 'pending').length
+  const unreadLeads = MOCK_LEADS.filter((l) => l.agentId === 'agent-1' && !l.isRead).length
 
   return (
     <div className="space-y-6">
@@ -39,7 +21,6 @@ export default async function DashboardPage() {
         </Button>
       </div>
 
-      {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -47,7 +28,7 @@ export default async function DashboardPage() {
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.activeProperties}</div>
+            <div className="text-2xl font-bold">{activeProperties}</div>
           </CardContent>
         </Card>
         <Card>
@@ -56,7 +37,7 @@ export default async function DashboardPage() {
             <Handshake className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingConnections}</div>
+            <div className="text-2xl font-bold">{pendingConnections}</div>
           </CardContent>
         </Card>
         <Card>
@@ -65,12 +46,11 @@ export default async function DashboardPage() {
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.unreadLeads}</div>
+            <div className="text-2xl font-bold">{unreadLeads}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick actions */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Acciones Rapidas</CardTitle>

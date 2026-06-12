@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { getAgentOnboardingStatus } from '@/app/actions/auth'
 import { Sidebar } from '@/components/layout/sidebar'
@@ -26,7 +27,7 @@ export default async function DashboardLayout({
         {/* Mobile header */}
         <header className="flex h-16 items-center border-b px-4 lg:hidden">
           <MobileSidebar />
-          <span className="ml-3 text-lg font-bold text-primary">RAIFI</span>
+          <Image src="/images/logo-icon.png" alt="RAIFI" width={28} height={28} className="ml-3 h-7 w-auto" />
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">

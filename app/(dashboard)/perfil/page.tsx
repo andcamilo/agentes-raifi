@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { onboardingSchema, type OnboardingInput } from '@/lib/validators'
 import { updateProfile } from '@/app/actions/agents'
-import { uploadAvatar } from '@/lib/firebase/storage'
+import { uploadAvatar } from '@/lib/firebase/storage' // stubbed
 import { useAuth } from '@/contexts/auth-context'
 import { SPECIALTIES, COLOMBIAN_CITIES } from '@/lib/constants'
 import { Button } from '@/components/ui/button'

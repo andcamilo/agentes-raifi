@@ -1,22 +1,16 @@
 import { NextResponse } from 'next/server'
-import { adminDb } from '@/lib/firebase/admin'
+import { getMockProperty } from '@/lib/mock-data'
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
-  const doc = await adminDb.collection('properties').doc(id).get()
+  const property = getMockProperty(id)
 
-  if (!doc.exists) {
+  if (!property) {
     return NextResponse.json({ error: 'Inmueble no encontrado' }, { status: 404 })
   }
 
-  const data = doc.data()!
-  return NextResponse.json({
-    id: doc.id,
-    ...data,
-    createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
-    updatedAt: data.updatedAt?.toDate?.()?.toISOString() || '',
-  })
+  return NextResponse.json(property)
 }

@@ -1,6 +1,6 @@
-import { adminDb } from '@/lib/firebase/admin'
 import { PropertyCard } from '@/components/properties/property-card'
 import { PropertyFilters } from '@/components/properties/property-filters'
+import { MOCK_PROPERTIES } from '@/lib/mock-data'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -14,27 +14,13 @@ interface Props {
 
 export default async function PropertiesPage({ searchParams }: Props) {
   const params = await searchParams
-  let query = adminDb
-    .collection('properties')
-    .where('status', '==', 'active')
-    .orderBy('createdAt', 'desc')
 
-  if (params.operation) query = query.where('operation', '==', params.operation)
-  if (params.type) query = query.where('type', '==', params.type)
-  if (params.city) query = query.where('city', '==', params.city)
-  if (params.bedrooms) query = query.where('bedrooms', '==', parseInt(params.bedrooms))
+  let properties = MOCK_PROPERTIES.filter((p) => p.status === 'active')
 
-  const snapshot = await query.limit(24).get()
-
-  const properties = snapshot.docs.map((doc) => {
-    const data = doc.data()
-    return {
-      id: doc.id,
-      ...data,
-      createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
-      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || '',
-    }
-  })
+  if (params.operation) properties = properties.filter((p) => p.operation === params.operation)
+  if (params.type) properties = properties.filter((p) => p.type === params.type)
+  if (params.city) properties = properties.filter((p) => p.city === params.city)
+  if (params.bedrooms) properties = properties.filter((p) => p.bedrooms >= parseInt(params.bedrooms!))
 
   return (
     <div className="container py-8">
@@ -54,8 +40,8 @@ export default async function PropertiesPage({ searchParams }: Props) {
         </div>
       ) : (
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {properties.map((property: Record<string, unknown>) => (
-            <PropertyCard key={property.id as string} property={property as never} />
+          {properties.map((property) => (
+            <PropertyCard key={property.id} property={property} />
           ))}
         </div>
       )}

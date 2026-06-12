@@ -1,11 +1,16 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { type User } from 'firebase/auth'
 import { onAuthChange, refreshToken } from '@/lib/firebase/auth'
 
+interface MockUser {
+  uid: string
+  email: string
+  displayName: string
+}
+
 interface AuthContextType {
-  user: User | null
+  user: MockUser | null
   loading: boolean
   isAuthenticated: boolean
 }
@@ -17,7 +22,7 @@ const AuthContext = createContext<AuthContextType>({
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<MockUser | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -28,7 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe
   }, [])
 
-  // Refresh token every 10 minutes to keep cookie in sync
   useEffect(() => {
     if (!user) return
     const interval = setInterval(refreshToken, 10 * 60 * 1000)

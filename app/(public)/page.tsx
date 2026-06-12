@@ -1,8 +1,12 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Building2, Users, Handshake } from 'lucide-react'
+import { MOCK_PROPERTIES } from '@/lib/mock-data'
+import { PropertyCard } from '@/components/properties/property-card'
 
 export default function HomePage() {
+  const featured = MOCK_PROPERTIES.filter((p) => p.isFeatured)
+
   return (
     <>
       {/* Hero */}
@@ -56,15 +60,32 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Featured properties */}
+      <section className="container py-16">
+        <h2 className="text-center text-3xl font-bold">Inmuebles Destacados</h2>
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <Button variant="outline" size="lg" asChild>
+            <Link href="/inmuebles">Ver todos los inmuebles</Link>
+          </Button>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="container py-16 text-center">
-        <h2 className="text-3xl font-bold">Unete a la red de agentes RAIFI</h2>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-          Sin cuotas mensuales. Solo pagas el 10% de comision cuando cierras un negocio.
-        </p>
-        <Button size="lg" className="mt-6" asChild>
-          <Link href="/registro">Crear Mi Cuenta</Link>
-        </Button>
+      <section className="border-t bg-muted/50 py-16 text-center">
+        <div className="container">
+          <h2 className="text-3xl font-bold">Unete a la red de agentes RAIFI</h2>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+            Sin cuotas mensuales. Solo pagas el 10% de comision cuando cierras un negocio.
+          </p>
+          <Button size="lg" className="mt-6" asChild>
+            <Link href="/registro">Crear Mi Cuenta</Link>
+          </Button>
+        </div>
       </section>
     </>
   )
