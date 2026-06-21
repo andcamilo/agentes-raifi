@@ -41,7 +41,7 @@ export function Sidebar() {
     <aside className="flex h-full w-64 flex-col border-r bg-background">
       {/* Logo */}
       <div className="flex h-16 items-center border-b px-6">
-        <Link href="/">
+        <Link href="/dashboard">
           <Image src="/images/logo-icon.png" alt="RAIFI" width={32} height={32} className="h-8 w-auto" />
         </Link>
       </div>

@@ -65,9 +65,9 @@ export default function MyPropertiesPage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <Button variant="ghost" size="icon" asChild>
-                    <Link href={`/inmuebles/${property.id}`}>
+                    <a href={`https://raifi.com/inmuebles/${property.id}`} target="_blank" rel="noopener noreferrer">
                       <Eye className="h-4 w-4" />
-                    </Link>
+                    </a>
                   </Button>
                   <Button variant="ghost" size="icon" asChild>
                     <Link href={`/mis-inmuebles/${property.id}/editar`}>

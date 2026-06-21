@@ -2,7 +2,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { LeadActions } from '@/components/leads/lead-actions'
 import { formatRelativeDate } from '@/lib/formatters'
 import { Mail, Phone, MessageSquare } from 'lucide-react'
-import Link from 'next/link'
 import { MOCK_LEADS } from '@/lib/mock-data'
 
 export default function LeadsPage() {
@@ -39,9 +38,9 @@ export default function LeadsPage() {
                     )}
                   </div>
                   {lead.propertyTitle && (
-                    <Link href={`/inmuebles/${lead.propertyId}`} className="text-sm text-primary hover:underline">
+                    <a href={`https://raifi.com/inmuebles/${lead.propertyId}`} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
                       {lead.propertyTitle}
-                    </Link>
+                    </a>
                   )}
                   <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
