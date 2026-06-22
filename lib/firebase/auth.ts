@@ -1,24 +1,38 @@
-// Stubbed auth module - replace with real Firebase Auth when ready
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  updateProfile,
+  onAuthStateChanged,
+  type User,
+} from 'firebase/auth'
+import { auth } from './config'
 
-export async function signUp(_email: string, _password: string, _fullName: string) {
-  // Mock: just return a fake user-like object
-  return { uid: 'agent-1', email: _email, displayName: _fullName, getIdToken: async () => 'mock-token' }
+export async function signUp(email: string, password: string, fullName: string) {
+  const credential = await createUserWithEmailAndPassword(auth, email, password)
+  await updateProfile(credential.user, { displayName: fullName })
+  await sendEmailVerification(credential.user)
+  return credential.user
 }
 
-export async function signIn(_email: string, _password: string) {
-  return { uid: 'agent-1', email: _email, displayName: 'Sofia Martinez', getIdToken: async () => 'mock-token' }
+export async function signIn(email: string, password: string) {
+  const credential = await signInWithEmailAndPassword(auth, email, password)
+  return credential.user
 }
 
 export async function signOut() {
+  await firebaseSignOut(auth)
   await fetch('/api/auth/session', { method: 'DELETE' })
 }
 
-export async function resetPassword(_email: string) {
-  // no-op in mock mode
+export async function resetPassword(email: string) {
+  await sendPasswordResetEmail(auth, email)
 }
 
-export async function setSessionCookie(_user: { getIdToken: () => Promise<string> }) {
-  const idToken = await _user.getIdToken()
+export async function setSessionCookie(user: User) {
+  const idToken = await user.getIdToken()
   await fetch('/api/auth/session', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -26,14 +40,18 @@ export async function setSessionCookie(_user: { getIdToken: () => Promise<string
   })
 }
 
-export function onAuthChange(callback: (user: { uid: string; email: string; displayName: string } | null) => void) {
-  // Simulate a logged-in user
-  setTimeout(() => {
-    callback({ uid: 'agent-1', email: 'sofia@raifi.co', displayName: 'Sofia Martinez' })
-  }, 100)
-  return () => {} // unsubscribe
+export function onAuthChange(callback: (user: User | null) => void) {
+  return onAuthStateChanged(auth, callback)
 }
 
 export async function refreshToken() {
-  // no-op in mock mode
+  const user = auth.currentUser
+  if (user) {
+    const idToken = await user.getIdToken(true)
+    await fetch('/api/auth/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    })
+  }
 }

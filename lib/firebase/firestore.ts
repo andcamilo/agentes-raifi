@@ -1,21 +1,43 @@
-// Stubbed Firestore client helpers - replace with real Firebase when ready
-// These exports are kept for build compatibility but are not functional
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  type QueryConstraint,
+  type DocumentData,
+  type QueryDocumentSnapshot,
+} from 'firebase/firestore'
+import { db } from './config'
 
-export function getCollection(_name: string) {
-  return null
+export function getCollection(name: string) {
+  return collection(db, name)
 }
 
-export function getDocRef(_collectionName: string, _docId: string) {
-  return null
+export function getDocRef(collectionName: string, docId: string) {
+  return doc(db, collectionName, docId)
 }
 
-export async function getDocument<T>(_collectionName: string, _docId: string): Promise<T | null> {
-  return null
+export async function getDocument<T>(collectionName: string, docId: string): Promise<T | null> {
+  const docRef = doc(db, collectionName, docId)
+  const snapshot = await getDoc(docRef)
+  if (!snapshot.exists()) return null
+  return { id: snapshot.id, ...snapshot.data() } as T
 }
 
 export async function queryDocuments<T>(
-  _collectionName: string,
-  _constraints: unknown[],
+  collectionName: string,
+  constraints: QueryConstraint[],
 ): Promise<T[]> {
-  return []
+  const ref = collection(db, collectionName)
+  const q = query(ref, ...constraints)
+  const snapshot = await getDocs(q)
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as T)
 }
+
+export { where, orderBy, limit, startAfter, query, collection, doc }
+export type { QueryDocumentSnapshot, DocumentData }

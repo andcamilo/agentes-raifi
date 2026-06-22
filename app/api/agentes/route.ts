@@ -1,17 +1,33 @@
 import { NextResponse } from 'next/server'
-import { MOCK_AGENTS } from '@/lib/mock-data'
+import { adminDb } from '@/lib/firebase/admin'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const city = searchParams.get('city')
   const specialty = searchParams.get('specialty')
-  const uid = searchParams.get('uid')
 
-  let agents = MOCK_AGENTS.filter((a) => a.isActive && a.isOnboarded)
+  let query = adminDb
+    .collection('agents')
+    .where('isActive', '==', true)
+    .where('isOnboarded', '==', true)
 
-  if (uid) agents = agents.filter((a) => a.uid === uid)
-  if (city) agents = agents.filter((a) => a.city === city)
-  if (specialty) agents = agents.filter((a) => a.specialties.includes(specialty as never))
+  if (city) query = query.where('city', '==', city)
+
+  const snapshot = await query.get()
+
+  let agents: Record<string, unknown>[] = snapshot.docs.map((doc) => {
+    const data = doc.data()
+    return {
+      uid: doc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate?.()?.toISOString() || '',
+      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || '',
+    }
+  })
+
+  if (specialty) {
+    agents = agents.filter((a) => (a.specialties as string[] | undefined)?.includes(specialty))
+  }
 
   return NextResponse.json({ agents })
 }

@@ -1,29 +1,40 @@
-// Stubbed storage module - replace with real Firebase Storage when ready
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage'
+import { storage } from './config'
 
 export async function uploadFile(
   path: string,
-  _file: File,
+  file: File,
 ): Promise<{ url: string; storagePath: string }> {
-  return { url: 'https://placehold.co/800x600?text=Uploaded', storagePath: path }
+  const storageRef = ref(storage, path)
+  await uploadBytes(storageRef, file)
+  const url = await getDownloadURL(storageRef)
+  return { url, storagePath: path }
 }
 
 export async function uploadPropertyImage(
   agentId: string,
-  _file: File,
+  file: File,
   imageId: string,
 ): Promise<{ url: string; storagePath: string }> {
   const path = `property-images/${agentId}/${imageId}`
-  return { url: 'https://placehold.co/800x600?text=Property', storagePath: path }
+  return uploadFile(path, file)
 }
 
 export async function uploadAvatar(
   userId: string,
-  _file: File,
+  file: File,
 ): Promise<{ url: string; storagePath: string }> {
-  const path = `avatars/${userId}/avatar.jpg`
-  return { url: 'https://placehold.co/200x200?text=Avatar', storagePath: path }
+  const ext = file.name.split('.').pop() || 'jpg'
+  const path = `avatars/${userId}/avatar.${ext}`
+  return uploadFile(path, file)
 }
 
-export async function deleteFile(_storagePath: string): Promise<void> {
-  // no-op in mock mode
+export async function deleteFile(storagePath: string): Promise<void> {
+  const storageRef = ref(storage, storagePath)
+  await deleteObject(storageRef)
 }
